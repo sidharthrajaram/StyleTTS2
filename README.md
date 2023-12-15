@@ -13,13 +13,17 @@ pip install styletts2
 ```python
 from styletts2 import tts
 
-my_tts = tts.StyleTTS2(model_checkpoint_path='/PATH/TO/epochs_2nd_00020.pth', config_path='/PATH/TO/config.yml')
+# No paths provided means default checkpoints/configs will be downloaded/cached.
+my_tts = tts_obj = tts.StyleTTS2()
+
+# Specific paths to a checkpoint and config can also be provided.
+other_tts = tts.StyleTTS2(model_checkpoint_path='/PATH/TO/epochs_2nd_00020.pth', config_path='/PATH/TO/config.yml')
 
 # optionally write to a WAV file
 out = my_tts.inference("Hello there, I am now a python package.", output_wav_file="test.wav")
 
 # specify target voice to clone
-my_tts.inference("Hello there, I am now a python package.", target_voice_path="/PATH/TO/some_voice.wav", output_wav_file="another_test.wav")
+other_tts.inference("Hello there, I am now a python package.", target_voice_path="/PATH/TO/some_voice.wav", output_wav_file="another_test.wav")
 ```
 
 Note: I'm not affiliated with the original authors. StyleTTS2 is a neat, open source, state-of-the-art approach to TTS. Pass your kudos and model-related questions to the authors at the model repo:
@@ -50,5 +54,8 @@ Online demo: [Hugging Face](https://huggingface.co/spaces/styletts2/styletts2) (
 - [ ] Inference support for LJSpeech model
 
 ## Notes
+- If specific checkpoint paths are not provided, default checkpoints and sub-module checkpoints are downloaded from the [HuggingFace repo](https://huggingface.co/yl4579/StyleTTS2-LibriTTS) and the [original GitHub repo](https://github.com/yl4579/StyleTTS2/tree/main/Utils), respectively, and then cached (similar behavior to HuggingFace Transformers API).
+
 - This package currently only supports inference capabilities. Dependencies and scripts related to training and fine-tuning have been pruned out. Check the [original repository](https://github.com/yl4579/StyleTTS2) for training/fine-tuning needs.
+
 - Currently using MIT-licensed [gruut](https://github.com/rhasspy/gruut) as the IPA phoneme converter. Found it to be the best alternative to phoneme converters based on [espeak](https://github.com/espeak-ng/espeak-ng)
