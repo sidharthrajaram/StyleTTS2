@@ -29,7 +29,6 @@ scipy = "^1.9.0"
 tqdm = "^4.66.1"
 typing = { version = "*", python = "<3.5" }
 typing-extensions = "^4.9.0"
-monotonic-align = {git = "https://github.com/resemble-ai/monotonic_align.git"}
 gruut = "^2.3.4"
 gruut-ipa = "^0.13.0"
 gruut-lang-en = "^2.0.0"

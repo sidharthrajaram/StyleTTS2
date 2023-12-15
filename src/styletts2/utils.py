@@ -1,6 +1,3 @@
-from monotonic_align import maximum_path
-from monotonic_align import mask_from_lens
-from monotonic_align.core import maximum_path_c
 import numpy as np
 import torch
 import copy
@@ -11,20 +8,6 @@ import librosa
 import matplotlib.pyplot as plt
 from munch import Munch
 
-def maximum_path(neg_cent, mask):
-  """ Cython optimized version.
-  neg_cent: [b, t_t, t_s]
-  mask: [b, t_t, t_s]
-  """
-  device = neg_cent.device
-  dtype = neg_cent.dtype
-  neg_cent =  np.ascontiguousarray(neg_cent.data.cpu().numpy().astype(np.float32))
-  path =  np.ascontiguousarray(np.zeros(neg_cent.shape, dtype=np.int32))
-
-  t_t_max = np.ascontiguousarray(mask.sum(1)[:, 0].data.cpu().numpy().astype(np.int32))
-  t_s_max = np.ascontiguousarray(mask.sum(2)[:, 0].data.cpu().numpy().astype(np.int32))
-  maximum_path_c(path, neg_cent, t_t_max, t_s_max)
-  return torch.from_numpy(path).to(device=device, dtype=dtype)
 
 def get_data_path_list(train_path=None, val_path=None):
     if train_path is None:
