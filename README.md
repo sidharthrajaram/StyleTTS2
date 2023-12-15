@@ -11,7 +11,7 @@ pip install styletts2
 ```
 4. Try it out either in Python shell or in your code: 
 ```python
-from styletts import tts
+from styletts2 import tts
 
 my_tts = tts.StyleTTS2(model_checkpoint_path='/PATH/TO/epochs_2nd_00020.pth', config_path='/PATH/TO/config.yml')
 
