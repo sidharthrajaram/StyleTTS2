@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "styletts2"
-version = "0.1.1"
+version = "0.1.2"
 description = "StyleTTS 2: Towards Human-Level Text-to-Speech through Style Diffusion and Adversarial Training with Large Speech Language Models. Original authors: Yinghao Aaron Li, Cong Han, Vinay S. Raghavan, Gavin Mischler, Nima Mesgarani. "
 authors = ["Sidharth Rajaram <rajaram@berkeley.edu>"]
 homepage = "https://github.com/sidharthrajaram/StyleTTS2"
@@ -21,6 +21,8 @@ librosa = "^0.10.1"
 nltk = "^3.8.1"
 matplotlib = "^3.7.0"
 accelerate = "^0.25.0"
+
+huggingface-hub = "^0.18.0"
 transformers = "^4.35.0"
 cached-path = "^1.5.0"
 einops = "^0.7.0"
