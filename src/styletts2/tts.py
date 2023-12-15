@@ -8,6 +8,7 @@ import librosa
 import scipy
 import torch
 import torchaudio
+from cached_path import cached_path
 torch.manual_seed(0)
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
@@ -26,6 +27,14 @@ from .phoneme import PhonemeConverterFactory
 from .text_utils import TextCleaner
 from .Utils.PLBERT.util import load_plbert
 from .Modules.diffusion.sampler import DiffusionSampler, ADPM2Sampler, KarrasSchedule
+
+
+LIBRI_TTS_CHECKPOINT_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/resolve/main/Models/LibriTTS/epochs_2nd_00020.pth"
+LIBRI_TTS_CONFIG_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/resolve/main/Models/LibriTTS/config.yml?download=true"
+
+ASR_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/ASR/epoch_00080.pth"
+F0_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/JDC/bst.t7"
+BERT_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/PLBERT/step_1000000.t7"
 
 
 to_mel = torchaudio.transforms.MelSpectrogram(
@@ -47,13 +56,13 @@ def preprocess(wave):
 
 
 class StyleTTS2:
-    def __init__(self, model_checkpoint_path, config_path, phoneme_converter='gruut'):
+    def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut'):
         self.model = None
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.phoneme_converter = PhonemeConverterFactory.load_phoneme_converter(phoneme_converter)
         self.config = None
         self.model_params = None
-        self.model = self.load_model(model_checkpoint_path, config_path)
+        self.model = self.load_model(model_path=model_checkpoint_path, config_path=config_path)
 
         self.sampler = DiffusionSampler(
             self.model.diffusion.diffusion,
@@ -63,33 +72,50 @@ class StyleTTS2:
         )
 
 
-    def load_model(self, model_path, config_path):
+    def load_model(self, model_path=None, config_path=None):
+        """
 
-        if not Path(model_path).exists():
-            raise ValueError("Invalid model checkpoint path. Provide a valid path to a StyleTTS2 LibriTTS checkpoint. If needed, download from https://huggingface.co/yl4579/StyleTTS2-LibriTTS.")
+        :param model_path:
+        :param config_path:
+        :return:
+        """
+
+        if not model_path or not Path(model_path).exists():
+            print("Invalid or missing model checkpoint path. Loading default model...")
+            model_path = cached_path(LIBRI_TTS_CHECKPOINT_URL)
+
+        if not config_path or not Path(config_path).exists():
+            print("Invalid or missing config path. Loading default config...")
+            config_path = cached_path(LIBRI_TTS_CONFIG_URL)
 
         self.config = yaml.safe_load(open(config_path))
 
         # load pretrained ASR model
-        ASR_config = self.config.get('ASR_config', 'Utils/ASR/config.yml')
-        if not Path(ASR_config).exists():
+        ASR_config = self.config.get('ASR_config', False)
+        if not ASR_config or not Path(ASR_config).exists():
+            print("Invalid ASR config path. Loading default config...")
             ASR_config = importlib.resources.files('styletts2') / 'Utils/ASR/config.yml'
-        ASR_path = self.config.get('ASR_path', 'Utils/ASR/epoch_00080.pth')
-        if not Path(ASR_path).exists():
-            ASR_path = importlib.resources.files('styletts2') / 'Utils/ASR/epoch_00080.pth'
+        ASR_path = self.config.get('ASR_path', False)
+        if not ASR_path or not Path(ASR_path).exists():
+            print("Invalid ASR model checkpoint path. Loading default model...")
+            ASR_path = cached_path(ASR_CHECKPOINT_URL)
         text_aligner = models.load_ASR_models(ASR_path, ASR_config)
 
         # load pretrained F0 model
-        F0_path = self.config.get('F0_path', 'Utils/JDC/bst.t7')
-        if not Path(F0_path).exists():
-            F0_path = importlib.resources.files('styletts2') / 'Utils/JDC/bst.t7'
+        F0_path = self.config.get('F0_path', False)
+        if F0_path or not Path(F0_path).exists():
+            print("Invalid F0 model path. Loading default model...")
+            F0_path = cached_path(F0_CHECKPOINT_URL)
         pitch_extractor = models.load_F0_models(F0_path)
 
         # load BERT model
-        BERT_path = self.config.get('PLBERT_dir', 'Utils/PLBERT/')
-        if not Path(BERT_path).exists():
-            BERT_path = importlib.resources.files('styletts2') / 'Utils/PLBERT/'
-        plbert = load_plbert(BERT_path)
+        BERT_dir_path = self.config.get('PLBERT_dir', False)  # Directory at BERT_dir_path should contain PLBERT config.yml AND checkpoint
+        if not BERT_dir_path or not Path(BERT_dir_path).exists():
+            BERT_config_path = importlib.resources.files('styletts2') / 'Utils/PLBERT/config.yml'
+            BERT_checkpoint_path = cached_path(BERT_CHECKPOINT_URL)
+            plbert = load_plbert(None, config_path=BERT_config_path, checkpoint_path=BERT_checkpoint_path)
+        else:
+            plbert = load_plbert(BERT_dir_path)
 
         self.model_params = utils.recursive_munch(self.config['model_params'])
         model = models.build_model(self.model_params, text_aligner, pitch_extractor, plbert)
