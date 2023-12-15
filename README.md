@@ -1,6 +1,6 @@
 # StyleTTS 2: The Python Package
 
-This package makes StyleTTS2, an approach to human-level text-to-speech, accessible with an inference module that uses strictly MIT licensed libraries. See **Considerations** and **Notes** below.
+This package makes StyleTTS2, an approach to human-level text-to-speech, accessible with an inference module that uses strictly MIT licensed libraries. See ***Conditions and Terms of Use*** and ***Notes*** below.
 
 ## Quick Start
 1. Ensure you are running Python >= 3.8
@@ -38,17 +38,17 @@ Online demo: [Hugging Face](https://huggingface.co/spaces/styletts2/styletts2) (
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yl4579/StyleTTS2/blob/main/) [![Slack](https://img.shields.io/badge/Join%20Our%20Community-Slack-blue)](https://join.slack.com/t/styletts2/shared_invite/zt-2805io6cg-0ROMhjfW9Gd_ix_FJqjGmQ)
 
-## Considerations
+## Conditions and Terms of Use
 ***Before using these pre-trained models, you agree to inform the listeners that the speech samples are synthesized by the pre-trained models, unless you have the permission to use the voice you synthesize. That is, you agree to only use voices whose speakers grant the permission to have their voice cloned, either directly or by license before making synthesized voices public, or you have to publicly announce that these voices are synthesized if you do not have the permission to use these voices.*** 
 
-### Common Issues
+## Common Issues
 - **High-pitched background noise**: This is caused by numerical float differences in older GPUs. For more details, please refer to issue [#13](https://github.com/yl4579/StyleTTS2/issues/13). Basically, you will need to use more modern GPUs or do inference on CPUs.
 - **Pre-trained model license**: You only need to abide by the above rules if you use **the pre-trained models** and the voices are **NOT** in the training set, i.e., your reference speakers are not from any open access dataset. For more details of rules to use the pre-trained models, please see [#37](https://github.com/yl4579/StyleTTS2/issues/37).
 
 ## TODO
-- [x] Inference support for LibriTTS (voice cloning) model inference
+- [x] Inference support for LibriTTS (voice cloning) model
 - [ ] Inference support for LJSpeech model
 
 ## Notes
-- This package currently only supports (and has been tested for) inference capabilities.
+- This package currently only supports inference capabilities. Dependencies and scripts related to training and fine-tuning have been pruned out. Check the [original repository](https://github.com/yl4579/StyleTTS2) for training/fine-tuning needs.
 - Currently using MIT-licensed [gruut](https://github.com/rhasspy/gruut) as the IPA phoneme converter. Found it to be the best alternative to phoneme converters based on [espeak](https://github.com/espeak-ng/espeak-ng)
