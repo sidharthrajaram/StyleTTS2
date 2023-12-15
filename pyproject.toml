@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "styletts2"
+version = "0.1.0"
+description = "StyleTTS 2: Towards Human-Level Text-to-Speech through Style Diffusion and Adversarial Training with Large Speech Language Models. Original authors: Yinghao Aaron Li, Cong Han, Vinay S. Raghavan, Gavin Mischler, Nima Mesgarani. "
+authors = ["Sidharth Rajaram <rajaram@berkeley.edu>"]
+homepage = "https://github.com/yl4579/StyleTTS2"
+documentation = "https://github.com/yl4579/StyleTTS2"
+repository = "https://github.com/sidharthrajaram/StyleTTS2"
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+soundfile = "^0.12.1"
+torchaudio = "^2.1.2"
+munch = "^4.0.0"
+torch = "^2.1.2"
+pydub = "^0.25.1"
+PyYAML = "^6.0.1"
+librosa = "^0.10.1"
+nltk = "^3.8.1"
+matplotlib = "^3.7.0"
+accelerate = "^0.25.0"
+transformers = "^4.36.1"
+einops = "^0.7.0"
+einops-exts = "^0.0.4"
+scipy = "^1.9.0"
+tqdm = "^4.66.1"
+typing = { version = "*", python = "<3.5" }
+typing-extensions = "^4.9.0"
+monotonic-align = {git = "https://github.com/resemble-ai/monotonic_align.git"}
+gruut = "^2.3.4"
+gruut-ipa = "^0.13.0"
+gruut-lang-en = "^2.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
