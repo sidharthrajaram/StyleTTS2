@@ -2,7 +2,6 @@ from nltk.tokenize import word_tokenize
 import nltk
 nltk.download('punkt')
 
-import importlib.resources
 from pathlib import Path
 import librosa
 import scipy
@@ -33,8 +32,12 @@ LIBRI_TTS_CHECKPOINT_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/res
 LIBRI_TTS_CONFIG_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/resolve/main/Models/LibriTTS/config.yml?download=true"
 
 ASR_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/ASR/epoch_00080.pth"
+ASR_CONFIG_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/ASR/config.yml"
 F0_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/JDC/bst.t7"
 BERT_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/PLBERT/step_1000000.t7"
+BERT_CONFIG_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/PLBERT/config.yml"
+
+DEFAULT_TARGET_VOICE_URL = "https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav"
 
 
 to_mel = torchaudio.transforms.MelSpectrogram(
@@ -94,7 +97,7 @@ class StyleTTS2:
         ASR_config = self.config.get('ASR_config', False)
         if not ASR_config or not Path(ASR_config).exists():
             print("Invalid ASR config path. Loading default config...")
-            ASR_config = importlib.resources.files('styletts2') / 'Utils/ASR/config.yml'
+            ASR_config = cached_path(ASR_CONFIG_URL)
         ASR_path = self.config.get('ASR_path', False)
         if not ASR_path or not Path(ASR_path).exists():
             print("Invalid ASR model checkpoint path. Loading default model...")
@@ -111,7 +114,7 @@ class StyleTTS2:
         # load BERT model
         BERT_dir_path = self.config.get('PLBERT_dir', False)  # Directory at BERT_dir_path should contain PLBERT config.yml AND checkpoint
         if not BERT_dir_path or not Path(BERT_dir_path).exists():
-            BERT_config_path = importlib.resources.files('styletts2') / 'Utils/PLBERT/config.yml'
+            BERT_config_path = cached_path(BERT_CONFIG_URL)
             BERT_checkpoint_path = cached_path(BERT_CHECKPOINT_URL)
             plbert = load_plbert(None, config_path=BERT_config_path, checkpoint_path=BERT_checkpoint_path)
         else:
@@ -162,7 +165,7 @@ class StyleTTS2:
 
     def inference(self,
                   text: str,
-                  target_voice_path='ReferenceAudio/f-us-demo.wav',
+                  target_voice_path=None,
                   output_wav_file=None,
                   output_sample_rate=24000,
                   phonemes=False,
@@ -171,9 +174,10 @@ class StyleTTS2:
                   diffusion_steps=5,
                   embedding_scale=1):
 
-        # default to clone 696_92939_000016_000006 voice
-        if (not target_voice_path) or (not Path(target_voice_path).exists()):
-            target_voice_path = importlib.resources.files('styletts2') / 'ReferenceAudio/696_92939_000016_000006.wav'
+        # default to clone https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav voice from LibriVox (public domain)
+        if not target_voice_path or not Path(target_voice_path).exists():
+            print("Cloning default target voice...")
+            target_voice_path = cached_path(DEFAULT_TARGET_VOICE_URL)
 
         text = text.strip()
         text = text.replace('"', '')
