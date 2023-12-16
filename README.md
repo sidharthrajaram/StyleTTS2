@@ -4,7 +4,7 @@ This package makes StyleTTS2, an approach to human-level text-to-speech, accessi
 
 ## Quick Start
 1. Ensure you are running Python >= 3.8
-2. Ensure you have downloaded the StyleTTS2 LibriTTS checkpoint and corresponding config file. Both are available to download at https://huggingface.co/yl4579/StyleTTS2-LibriTTS.
+2. [Optional] Downloaded the StyleTTS2 LibriTTS checkpoint and corresponding config file. Both are available to download at https://huggingface.co/yl4579/StyleTTS2-LibriTTS.
 3. Install the package using pip:
 ```bash
 pip install styletts2
