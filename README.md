@@ -1,10 +1,10 @@
 # StyleTTS 2: The Python Package
 
-This package makes StyleTTS2, an approach to human-level text-to-speech, accessible with an inference module that uses strictly MIT licensed libraries. See ***Conditions and Terms of Use*** and ***Notes*** below.
+This package makes StyleTTS2, an approach to human-level text-to-speech, accessible with an inference module that uses strictly MIT licensed libraries. See ***Conditions and Terms of Use***, ***Common Issues***, and ***Notes*** below.
 
 ## Quick Start
-1. Ensure you are running Python >= 3.8
-2. [Optional] Downloaded the StyleTTS2 LibriTTS checkpoint and corresponding config file. Both are available to download at https://huggingface.co/yl4579/StyleTTS2-LibriTTS.
+1. Ensure you are running Python >= 3.8 (currently supports 3.8, 3.9, 3.10 due to some other library dependencies)
+2. [Optional] Downloaded the StyleTTS2 LibriTTS checkpoint and corresponding config file. Both are available to download at https://huggingface.co/yl4579/StyleTTS2-LibriTTS. You can also provide paths to your own checkpoint and config file (just ensure it is the same format as the [original one](https://huggingface.co/yl4579/StyleTTS2-LibriTTS/blob/main/Models/LibriTTS/config.yml)).
 3. Install the package using pip:
 ```bash
 pip install styletts2
@@ -46,12 +46,26 @@ Online demo: [Hugging Face](https://huggingface.co/spaces/styletts2/styletts2) (
 ***Before using these pre-trained models, you agree to inform the listeners that the speech samples are synthesized by the pre-trained models, unless you have the permission to use the voice you synthesize. That is, you agree to only use voices whose speakers grant the permission to have their voice cloned, either directly or by license before making synthesized voices public, or you have to publicly announce that these voices are synthesized if you do not have the permission to use these voices.*** 
 
 ## Common Issues
+- **[MacOS] ImportError due to incompatible architecture for pycrfsuite**: This is caused by a dependency on python-crfsuite by the [gruut](https://github.com/rhasspy/gruut) phoneme converter. If you are operating on a conda environment, try the following:
+    ```bash
+    conda install -c conda-forge python-crfsuite
+    ```
+    Another option is adding another phoneme converter with the abstraction detailed in `phoneme.py` and using that instead.
+
+- **Voice quality**: This is more of a catch-all issue for voice quality related issues. In most cases, strange annunciations are the result of the phoneme converter. The hope is that the field of MIT licensed phoneme converters (i.e Gruut, DeepPhonemizer, etc.) will eventually become incredibly competitive with the legacy converters such as `espeak`. However, in the meantime here are some potential avenues for quality improvement:
+
+    - **More phonetically diverse target voice samples for cloning**: The WAV file passed as the target/reference voice should preferably have a good range of pronunciations and be of good audio quality. In experimenting with cloning, I've noticed that the speech output quality does improve alongside the quality of the target/reference voice sample.
+
 - **High-pitched background noise**: This is caused by numerical float differences in older GPUs. For more details, please refer to issue [#13](https://github.com/yl4579/StyleTTS2/issues/13). Basically, you will need to use more modern GPUs or do inference on CPUs.
+
 - **Pre-trained model license**: You only need to abide by the above rules if you use **the pre-trained models** and the voices are **NOT** in the training set, i.e., your reference speakers are not from any open access dataset. For more details of rules to use the pre-trained models, please see [#37](https://github.com/yl4579/StyleTTS2/issues/37).
 
 ## TODO
 - [x] Inference support for LibriTTS (voice cloning) model
 - [ ] Inference support for LJSpeech model
+- [ ] Support for DeepPhonemizer in `phoneme.py`
+- [ ] Better in-code documentation
+- [ ] Caching style vector of a reference/target voice (even faster inference)
 
 ## Notes
 - If specific checkpoint paths are not provided, default checkpoints and sub-module checkpoints are downloaded from the [HuggingFace repo](https://huggingface.co/yl4579/StyleTTS2-LibriTTS) and the [original GitHub repo](https://github.com/yl4579/StyleTTS2/tree/main/Utils), respectively, and then cached (similar behavior to HuggingFace Transformers API).
