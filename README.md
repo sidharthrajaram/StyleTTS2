@@ -64,6 +64,7 @@ Online demo: [Hugging Face](https://huggingface.co/spaces/styletts2/styletts2) (
 - [x] Inference support for LibriTTS (voice cloning) model
 - [ ] Inference support for LJSpeech model
 - [ ] Support for DeepPhonemizer in `phoneme.py`
+- [ ] Automatic updates to StyleTTS2 model source code via GitHub Actions
 - [ ] Better in-code documentation
 - [ ] Caching style vector of a reference/target voice (even faster inference)
 
