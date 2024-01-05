@@ -77,9 +77,10 @@ class StyleTTS2:
 
     def load_model(self, model_path=None, config_path=None):
         """
-
-        :param model_path:
-        :param config_path:
+        Loads model to prepare for inference. Loads checkpoints from provided paths or from local cache (or downloads
+        default checkpoints to local cache if not present).
+        :param model_path: Path to LibriTTS StyleTTS2 model checkpoint (TODO: LJSpeech model support)
+        :param config_path: Path to LibriTTS StyleTTS2 model config JSON (TODO: LJSpeech model support)
         :return:
         """
 
@@ -150,6 +151,12 @@ class StyleTTS2:
 
 
     def compute_style(self, path):
+        """
+        Compute style vector, essentially an embedding that captures the characteristics
+        of the target voice that is being cloned
+        :param path: Path to target voice audio file
+        :return: style vector
+        """
         wave, sr = librosa.load(path, sr=24000)
         audio, index = librosa.effects.trim(wave, top_db=30)
         if sr != 24000:
@@ -168,12 +175,24 @@ class StyleTTS2:
                   target_voice_path=None,
                   output_wav_file=None,
                   output_sample_rate=24000,
-                  phonemes=False,
                   alpha=0.3,
                   beta=0.7,
                   diffusion_steps=5,
                   embedding_scale=1,
                   ref_s=None):
+        """
+        Text-to-speech function
+        :param text: Input text to turn into speech.
+        :param target_voice_path: Path to audio file of target voice to clone.
+        :param output_wav_file: Name of output audio file (if output WAV file is desired).
+        :param output_sample_rate: Output sample rate (default 24000).
+        :param alpha: Determines timbre of speech, higher means style is more suitable to text than to the target voice.
+        :param beta: Determines prosody of speech, higher means style is more suitable to text than to the target voice.
+        :param diffusion_steps: The more the steps, the more diverse the samples are, with the cost of speed.
+        :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
+        :param ref_s: Pre-computed style vector to pass directly.
+        :return: audio data as a Numpy array (will also create the WAV file if output_wav_file was set).
+        """
 
         # default to clone https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav voice from LibriVox (public domain)
         if not target_voice_path or not Path(target_voice_path).exists():
@@ -252,6 +271,6 @@ class StyleTTS2:
 
         output = out.squeeze().cpu().numpy()[..., :-50] # weird pulse at the end of the model, need to be fixed later
         if output_wav_file:
-            scipy.io.wavfile.write(output_wav_file, rate=24000, data=output)
+            scipy.io.wavfile.write(output_wav_file, rate=output_sample_rate, data=output)
         return output
 

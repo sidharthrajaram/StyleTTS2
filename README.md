@@ -26,7 +26,42 @@ other_tts = tts.StyleTTS2(model_checkpoint_path='/PATH/TO/epochs_2nd_00020.pth',
 other_tts.inference("Hello there, I am now a python package.", target_voice_path="/PATH/TO/some_voice.wav", output_wav_file="another_test.wav")
 ```
 
-Note: I'm not affiliated with the original authors. StyleTTS2 is a neat, open source, state-of-the-art approach to TTS. Pass your kudos and model-related questions to the authors at the model repo:
+## Inference function reference
+
+```
+def inference(self,
+              text: str,
+              target_voice_path=None,
+              output_wav_file=None,
+              output_sample_rate=24000,
+              alpha=0.3,
+              beta=0.7,
+              diffusion_steps=5,
+              embedding_scale=1,
+              ref_s=None)
+```
+**text**: Input text to turn into speech.
+
+**target_voice_path**: Path to audio file of target voice to clone.
+
+**output_wav_file**: Name of output audio file (if output WAV file is desired).
+
+**output_sample_rate**: Output sample rate (default 24000).
+
+**alpha**: Determines timbre of speech, higher means style is more suitable to text than to the target voice.
+
+**beta**: Determines prosody of speech, higher means style is more suitable to text than to the target voice.
+
+**diffusion_steps**: The more the steps, the more diverse the samples are, with the cost of speed.
+
+**embedding_scale**: Higher scale means style is more conditional to the input text and hence more emotional.
+
+**ref_s**: Pre-computed style vector to pass directly.
+
+**return**: audio data as a Numpy array (will also create the WAV file if output_wav_file was set).
+
+
+### *Note: I'm not affiliated with the original authors. StyleTTS2 is a neat, open source, state-of-the-art approach to TTS. Pass your kudos to the authors at the model repo:*
 
 # [StyleTTS 2: Towards Human-Level Text-to-Speech through Style Diffusion and Adversarial Training with Large Speech Language Models](https://github.com/yl4579/StyleTTS2)
 
@@ -62,10 +97,11 @@ Online demo: [Hugging Face](https://huggingface.co/spaces/styletts2/styletts2) (
 
 ## TODO
 - [x] Inference support for LibriTTS (voice cloning) model
+- [x] Option to provide style vector directly
 - [ ] Inference support for LJSpeech model
 - [ ] Support for DeepPhonemizer in `phoneme.py`
 - [ ] Automatic updates to StyleTTS2 model source code via GitHub Actions
-- [ ] Better in-code documentation
+- [x] Documentation for inference and load methods
 - [ ] Caching style vector of a reference/target voice (even faster inference)
 
 ## Notes
