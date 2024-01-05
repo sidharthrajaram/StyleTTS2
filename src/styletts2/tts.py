@@ -172,7 +172,8 @@ class StyleTTS2:
                   alpha=0.3,
                   beta=0.7,
                   diffusion_steps=5,
-                  embedding_scale=1):
+                  embedding_scale=1,
+                  ref_s=None):
 
         # default to clone https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav voice from LibriVox (public domain)
         if not target_voice_path or not Path(target_voice_path).exists():
@@ -190,7 +191,8 @@ class StyleTTS2:
         tokens.insert(0, 0)
         tokens = torch.LongTensor(tokens).to(self.device).unsqueeze(0)
 
-        ref_s = self.compute_style(target_voice_path)  # target style vector
+        if ref_s == None:
+            ref_s = self.compute_style(target_voice_path)  # target style vector
 
         with torch.no_grad():
             input_lengths = torch.LongTensor([tokens.shape[-1]]).to(self.device)
