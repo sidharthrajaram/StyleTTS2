@@ -3,7 +3,7 @@
 This package makes StyleTTS2, an approach to human-level text-to-speech, accessible with an inference module that uses strictly MIT licensed libraries. See ***Conditions and Terms of Use***, ***Common Issues***, and ***Notes*** below.
 
 ## Quick Start
-1. Ensure you are running Python >= 3.8 (currently supports 3.8, 3.9, 3.10 due to some other library dependencies)
+1. Ensure you are running Python >= 3.9 (currently supports 3.9, 3.10 due to some other library dependencies)
 2. [Optional] Downloaded the StyleTTS2 LibriTTS checkpoint and corresponding config file. Both are available to download at https://huggingface.co/yl4579/StyleTTS2-LibriTTS. You can also provide paths to your own checkpoint and config file (just ensure it is the same format as the [original one](https://huggingface.co/yl4579/StyleTTS2-LibriTTS/blob/main/Models/LibriTTS/config.yml)).
 3. Install the package using pip:
 ```bash

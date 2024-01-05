@@ -9,7 +9,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 
 soundfile = "^0.12.1"
 torchaudio = "^2.1.2"
@@ -22,14 +22,14 @@ nltk = "^3.8.1"
 matplotlib = "^3.7.0"
 accelerate = "^0.25.0"
 
-huggingface-hub = "^0.18.0"
-transformers = "^4.35.0, <4.36.0"
-cached-path = "^1.5.0"
+huggingface-hub = "^0.19.0"
+transformers = "^4.36.0"
+cached-path = "^1.5.1"
 filelock = "^3.12.4, <3.13"
 
 einops = "^0.7.0"
 einops-exts = "^0.0.4"
-scipy = "^1.9.0"
+scipy = "^1.10.0"
 tqdm = "^4.66.1"
 typing = { version = "*", python = "<3.5" }
 typing-extensions = "^4.9.0"
