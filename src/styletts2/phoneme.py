@@ -1,4 +1,5 @@
 from gruut import sentences
+from collections.abc import Iterable
 
 
 class PhonemeConverter:
@@ -9,9 +10,12 @@ class PhonemeConverter:
 class GruutPhonemizer(PhonemeConverter):
     def phonemize(self, text, lang='en-us'):
         phonemized = []
-        for sent in sentences(text, lang='en-us'):
+        for sent in sentences(text, lang=lang):
             for word in sent:
-                phonemized.append(''.join(word.phonemes))
+                if isinstance(word.phonemes, Iterable):
+                    phonemized.append(''.join(word.phonemes))
+                elif isinstance(word.phonemes, str):
+                    phonemized.append(word.phonemes)
         phonemized_text = ' '.join(phonemized)
         return phonemized_text
 
