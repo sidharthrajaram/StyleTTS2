@@ -335,6 +335,9 @@ class StyleTTS2:
         segments = []
         prev_s = None
         for text_segment in text_segments:
+            # Address cut-off sentence issue due to langchain text splitter
+            if text_segment[-1] != '.':
+                text_segment += ', '
             segment_output, prev_s = self.long_inference_segment(text_segment,
                                                                  prev_s,
                                                                  ref_s,
