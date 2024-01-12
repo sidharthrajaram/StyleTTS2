@@ -192,7 +192,7 @@ class StyleTTS2:
                   beta=0.7,
                   diffusion_steps=5,
                   embedding_scale=1,
-                  speed=0,
+                  speed=1,
                   ref_s=None):
         """
         Text-to-speech function
