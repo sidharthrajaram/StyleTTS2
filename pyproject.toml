@@ -39,6 +39,7 @@ gruut = "^2.3.4"
 gruut-ipa = "^0.13.0"
 gruut-lang-en = "^2.0.0"
 networkx = "^2.8.8, <3.0.0"
+phonemizer = "^2.2.2"
 
 [build-system]
 requires = ["poetry-core"]
