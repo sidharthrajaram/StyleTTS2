@@ -79,7 +79,8 @@ class StyleTTS2:
     def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter=None, local=None):
         self.model = None
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        if local and os.path.exists(local):
+        if local:
+            os.makedirs(local, exist_ok=True)
             set_cache_dir(local)
 
         self.phoneme_converter = phoneme_check(phoneme_converter)
