@@ -354,18 +354,17 @@ class StyleTTS2:
 
     def long_inference_segment(self,
                                text,
-                               phonemize=True,
                                prev_s,
                                ref_s,
                                alpha=0.3,
                                beta=0.7,
                                t=0.7,
                                diffusion_steps=5,
-                               embedding_scale=1):
+                               embedding_scale=1,
+                               phonemize=True):
         """
         Performs inference for segment of longform text; see long_inference()
         :param text: Input text
-        :param phonemize: Phonemize text? If not, expects that text is already phonemized
         :param prev_s: Style vector of previous speech segment (used to keep voice consistent in longform inference)
         :param ref_s: Pre-computed style vector of target voice to clone
         :param alpha: Determines timbre of speech, higher means style is more suitable to text than to the target voice.
@@ -373,6 +372,7 @@ class StyleTTS2:
         :param t: Determines consistency of style across inference segments (0 lowest, 1 highest)
         :param diffusion_steps: The more the steps, the more diverse the samples are, with the cost of speed.
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
+        :param phonemize: Phonemize text? If not, expects that text is already phonemized
         :return: audio data as a Numpy array
         """
         if phonemize:
