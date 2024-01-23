@@ -354,6 +354,7 @@ class StyleTTS2:
 
     def long_inference_segment(self,
                                text,
+                               phonemize=True,
                                prev_s,
                                ref_s,
                                alpha=0.3,
@@ -364,6 +365,7 @@ class StyleTTS2:
         """
         Performs inference for segment of longform text; see long_inference()
         :param text: Input text
+        :param phonemize: Phonemize text? If not, expects that text is already phonemized
         :param prev_s: Style vector of previous speech segment (used to keep voice consistent in longform inference)
         :param ref_s: Pre-computed style vector of target voice to clone
         :param alpha: Determines timbre of speech, higher means style is more suitable to text than to the target voice.
@@ -373,13 +375,16 @@ class StyleTTS2:
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
         :return: audio data as a Numpy array
         """
-        text = text.strip()
-        text = text.replace('"', '')
-        phonemized_text = self.phoneme_converter.phonemize(text)
-        ps = word_tokenize(phonemized_text)
-        phoneme_string = ' '.join(ps)
-        phoneme_string = phoneme_string.replace('``', '"')
-        phoneme_string = phoneme_string.replace("''", '"')
+        if phonemize:
+            text = text.strip()
+            text = text.replace('"', '')
+            phonemized_text = self.phoneme_converter.phonemize(text)
+            ps = word_tokenize(phonemized_text)
+            phoneme_string = ' '.join(ps)
+            phoneme_string = phoneme_string.replace('``', '"')
+            phoneme_string = phoneme_string.replace("''", '"')
+        else:
+            phoneme_string = text
 
         textcleaner = TextCleaner()
         tokens = textcleaner(phoneme_string)
