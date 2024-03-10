@@ -229,11 +229,14 @@ class StyleTTS2:
                 target_voice_path = cached_path(DEFAULT_TARGET_VOICE_URL)
             ref_s = self.compute_style(target_voice_path)  # target style vector
 
-        text = text.strip()
-        text = text.replace('"', '')
-        phonemized_text = self.phoneme_converter.phonemize(text)
-        ps = word_tokenize(phonemized_text)
-        phoneme_string = ' '.join(ps)
+        if phonemize:
+            text = text.strip()
+            text = text.replace('"', '')
+            phonemized_text = self.phoneme_converter.phonemize(text)
+            ps = word_tokenize(phonemized_text)
+            phoneme_string = ' '.join(ps)
+        else:
+            phoneme_string
 
         textcleaner = TextCleaner()
         tokens = textcleaner(phoneme_string)
