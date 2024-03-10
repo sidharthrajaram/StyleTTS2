@@ -236,7 +236,7 @@ class StyleTTS2:
             ps = word_tokenize(phonemized_text)
             phoneme_string = ' '.join(ps)
         else:
-            phoneme_string
+            phoneme_string = text
 
         textcleaner = TextCleaner()
         tokens = textcleaner(phoneme_string)
