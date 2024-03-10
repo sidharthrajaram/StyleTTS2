@@ -192,7 +192,8 @@ class StyleTTS2:
                   beta=0.7,
                   diffusion_steps=5,
                   embedding_scale=1,
-                  ref_s=None):
+                  ref_s=None,
+                  phonemize=True):
         """
         Text-to-speech function
         :param text: Input text to turn into speech.
@@ -204,6 +205,7 @@ class StyleTTS2:
         :param diffusion_steps: The more the steps, the more diverse the samples are, with the cost of speed.
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
         :param ref_s: Pre-computed style vector to pass directly.
+        :param phonemize: Phonemize text. Defaults to True
         :return: audio data as a Numpy array (will also create the WAV file if output_wav_file was set).
         """
 
@@ -217,7 +219,8 @@ class StyleTTS2:
                                        beta=beta,
                                        diffusion_steps=diffusion_steps,
                                        embedding_scale=embedding_scale,
-                                       ref_s=ref_s)
+                                       ref_s=ref_s,
+                                       phonemize=phonemize)
 
         if ref_s is None:
             # default to clone https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav voice from LibriVox (public domain)
@@ -226,11 +229,14 @@ class StyleTTS2:
                 target_voice_path = cached_path(DEFAULT_TARGET_VOICE_URL)
             ref_s = self.compute_style(target_voice_path)  # target style vector
 
-        text = text.strip()
-        text = text.replace('"', '')
-        phonemized_text = self.phoneme_converter.phonemize(text)
-        ps = word_tokenize(phonemized_text)
-        phoneme_string = ' '.join(ps)
+        if phonemize:
+            text = text.strip()
+            text = text.replace('"', '')
+            phonemized_text = self.phoneme_converter.phonemize(text)
+            ps = word_tokenize(phonemized_text)
+            phoneme_string = ' '.join(ps)
+        else:
+            phoneme_string
 
         textcleaner = TextCleaner()
         tokens = textcleaner(phoneme_string)
@@ -308,7 +314,8 @@ class StyleTTS2:
                        t=0.7,
                        diffusion_steps=5,
                        embedding_scale=1,
-                       ref_s=None):
+                       ref_s=None,
+                       phonemize=True):
         """
         Inference for longform text. Used automatically in inference() when needed.
         :param text: Input text to turn into speech.
@@ -321,6 +328,7 @@ class StyleTTS2:
         :param diffusion_steps: The more the steps, the more diverse the samples are, with the cost of speed.
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
         :param ref_s: Pre-computed style vector to pass directly.
+        :param phonemize: Phonemize text. Defaults to True
         :return: concatenated audio data as a Numpy array (will also create the WAV file if output_wav_file was set).
         """
 
@@ -345,7 +353,8 @@ class StyleTTS2:
                                                                  beta=beta,
                                                                  t=t,
                                                                  diffusion_steps=diffusion_steps,
-                                                                 embedding_scale=embedding_scale)
+                                                                 embedding_scale=embedding_scale,
+                                                                 phonemize=phonemize)
             segments.append(segment_output)
         output = np.concatenate(segments)
         if output_wav_file:
@@ -360,7 +369,8 @@ class StyleTTS2:
                                beta=0.7,
                                t=0.7,
                                diffusion_steps=5,
-                               embedding_scale=1):
+                               embedding_scale=1,
+                               phonemize=True):
         """
         Performs inference for segment of longform text; see long_inference()
         :param text: Input text
@@ -371,15 +381,19 @@ class StyleTTS2:
         :param t: Determines consistency of style across inference segments (0 lowest, 1 highest)
         :param diffusion_steps: The more the steps, the more diverse the samples are, with the cost of speed.
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
+        :param phonemize: Phonemize text? If not, expects that text is already phonemized
         :return: audio data as a Numpy array
         """
-        text = text.strip()
-        text = text.replace('"', '')
-        phonemized_text = self.phoneme_converter.phonemize(text)
-        ps = word_tokenize(phonemized_text)
-        phoneme_string = ' '.join(ps)
-        phoneme_string = phoneme_string.replace('``', '"')
-        phoneme_string = phoneme_string.replace("''", '"')
+        if phonemize:
+            text = text.strip()
+            text = text.replace('"', '')
+            phonemized_text = self.phoneme_converter.phonemize(text)
+            ps = word_tokenize(phonemized_text)
+            phoneme_string = ' '.join(ps)
+            phoneme_string = phoneme_string.replace('``', '"')
+            phoneme_string = phoneme_string.replace("''", '"')
+        else:
+            phoneme_string = text
 
         textcleaner = TextCleaner()
         tokens = textcleaner(phoneme_string)
