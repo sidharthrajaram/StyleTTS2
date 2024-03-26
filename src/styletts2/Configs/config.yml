@@ -14,7 +14,8 @@ load_only_params: false # set to true if do not want to load epoch numbers and o
 F0_path: "Utils/JDC/bst.t7"
 ASR_config: "Utils/ASR/config.yml"
 ASR_path: "Utils/ASR/epoch_00080.pth"
-PLBERT_dir: 'Utils/PLBERT/'
+PLBERT_config: 'Utils/PLBERT/config.yml'
+PLBERT_path: 'Utils/PLBERT/step_1000000.t7'
 
 data_params:
   train_data: "Data/train_list.txt"

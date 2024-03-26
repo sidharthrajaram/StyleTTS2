@@ -126,13 +126,15 @@ class StyleTTS2:
         pitch_extractor = models.load_F0_models(F0_path)
 
         # load BERT model
-        BERT_dir_path = self.config.get('PLBERT_dir', False)  # Directory at BERT_dir_path should contain PLBERT config.yml AND checkpoint
-        if not BERT_dir_path or not Path(BERT_dir_path).exists():
-            BERT_config_path = cached_path(BERT_CONFIG_URL)
-            BERT_checkpoint_path = cached_path(BERT_CHECKPOINT_URL)
-            plbert = load_plbert(None, config_path=BERT_config_path, checkpoint_path=BERT_checkpoint_path)
-        else:
-            plbert = load_plbert(BERT_dir_path)
+        BERT_config = self.config.get('PLBERT_config', False)
+        if not BERT_config or not Path(BERT_config).exists():
+            print("Invalid BERT config path. Loading default config...")
+            BERT_config = cached_path(BERT_CONFIG_URL)
+        BERT_path = self.config.get('PLBERT_path', False)
+        if not BERT_path or not Path(BERT_path).exists():
+            print("Invalid BERT model checkpoint path. Loading default model...")
+            BERT_path = cached_path(BERT_CHECKPOINT_URL)
+        plbert = load_plbert(None, config_path=BERT_config, checkpoint_path=BERT_path)
 
         self.model_params = utils.recursive_munch(self.config['model_params'])
         model = models.build_model(self.model_params, text_aligner, pitch_extractor, plbert)
