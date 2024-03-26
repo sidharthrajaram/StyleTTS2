@@ -120,7 +120,7 @@ class StyleTTS2:
 
         # load pretrained F0 model
         F0_path = self.config.get('F0_path', False)
-        if F0_path or not Path(F0_path).exists():
+        if not F0_path or not Path(F0_path).exists():
             print("Invalid F0 model path. Loading default model...")
             F0_path = cached_path(F0_CHECKPOINT_URL)
         pitch_extractor = models.load_F0_models(F0_path)
