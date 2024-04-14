@@ -18,7 +18,7 @@ random.seed(0)
 import numpy as np
 np.random.seed(0)
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from txtsplit import txtsplit
 import yaml
 
 from . import models
@@ -61,13 +61,7 @@ def preprocess(wave):
 
 
 def segment_text(text):
-    splitter = RecursiveCharacterTextSplitter(
-        separators=["\n\n", "\n", " ", ""],
-        chunk_size=SINGLE_INFERENCE_MAX_LEN,
-        chunk_overlap=0,
-        length_function=len,
-    )
-    segments = splitter.split_text(text)
+    segments = txtsplit(text, desired_length=100, max_length=200)
     return segments
 
 
@@ -205,7 +199,7 @@ class StyleTTS2:
         :param diffusion_steps: The more the steps, the more diverse the samples are, with the cost of speed.
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
         :param ref_s: Pre-computed style vector to pass directly.
-        :param phonemize: Phonemize text. Defaults to True
+        :param phonemize: Phonemize text. Defaults to True.
         :return: audio data as a Numpy array (will also create the WAV file if output_wav_file was set).
         """
 
@@ -229,6 +223,7 @@ class StyleTTS2:
                 target_voice_path = cached_path(DEFAULT_TARGET_VOICE_URL)
             ref_s = self.compute_style(target_voice_path)  # target style vector
 
+        # TODO: Clarifying text pre-processing
         if phonemize:
             text = text.strip()
             text = text.replace('"', '')
@@ -238,7 +233,7 @@ class StyleTTS2:
         else:
             phoneme_string = text
 
-        textcleaner = TextCleaner()
+        textcleaner = TextCleaner()  # TODO: look into removing
         tokens = textcleaner(phoneme_string)
         tokens.insert(0, 0)
         tokens = torch.LongTensor(tokens).to(self.device).unsqueeze(0)
