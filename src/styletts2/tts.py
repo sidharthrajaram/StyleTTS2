@@ -82,22 +82,17 @@ class StyleTTS2:
         )
 
 
-    def load_model(self, model_path=None, config_path=None):
+    def load_model(self, model_path=LIBRI_TTS_CHECKPOINT_URL, config_path=LIBRI_TTS_CONFIG_URL):
         """
         Loads model to prepare for inference. Loads checkpoints from provided paths or from local cache (or downloads
         default checkpoints to local cache if not present).
-        :param model_path: Path to LibriTTS StyleTTS2 model checkpoint (TODO: LJSpeech model support)
-        :param config_path: Path to LibriTTS StyleTTS2 model config JSON (TODO: LJSpeech model support)
+        :param model_path: Path or HuggingFace URL to StyleTTS2 model checkpoint (TODO: LJSpeech model support)
+        :param config_path: Path or HuggingFace URL to model config JSON (TODO: LJSpeech model support)
         :return:
         """
 
-        if not model_path or not Path(model_path).exists():
-            print("Invalid or missing model checkpoint path. Loading default model...")
-            model_path = cached_path(LIBRI_TTS_CHECKPOINT_URL)
-
-        if not config_path or not Path(config_path).exists():
-            print("Invalid or missing config path. Loading default config...")
-            config_path = cached_path(LIBRI_TTS_CONFIG_URL)
+        model_path = cached_path(model_path)
+        config_path = cached_path(config_path)
 
         self.config = yaml.safe_load(open(config_path))
 
@@ -189,7 +184,8 @@ class StyleTTS2:
                   diffusion_steps=5,
                   embedding_scale=1,
                   ref_s=None,
-                  phonemize=True):
+                  phonemize=True,
+                  speed=1):
         """
         Text-to-speech function
         :param text: Input text to turn into speech.
@@ -202,7 +198,8 @@ class StyleTTS2:
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
         :param ref_s: Pre-computed style vector to pass directly.
         :param phonemize: Phonemize text. Defaults to True.
-        :return: audio data as a Numpy array (will also create the WAV file if output_wav_file was set).
+        :param speed: Speed factor for the generated speech, where 1 is normal speed, values greater than 1 will speed up the speech, and values less than 1 will slow it down (default is 1).
+        :return: Audio data as a Numpy array (will also create the WAV file if output_wav_file is set).
         """
 
         # BERT model is limited by a tensor size [1, 512] during its inference, which roughly corresponds to ~450 characters
@@ -267,7 +264,7 @@ class StyleTTS2:
             x, _ = self.model.predictor.lstm(d)
             duration = self.model.predictor.duration_proj(x)
 
-            duration = torch.sigmoid(duration).sum(axis=-1)
+            duration = torch.sigmoid(duration).sum(axis=-1) / speed
             pred_dur = torch.round(duration.squeeze()).clamp(min=1)
 
             pred_aln_trg = torch.zeros(input_lengths, int(pred_dur.sum().data))
